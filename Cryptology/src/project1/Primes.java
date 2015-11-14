@@ -15,7 +15,6 @@ public class Primes {
 		while (primes.size() < nbrOfPrimes) {
 			found = false;
 			for (BigInteger big : primes) {
-				// System.out.println("i: " + i + " j: " + j);
 				if (prime.mod(big).equals(BigInteger.ZERO)) {
 					found = true;
 					break;
@@ -23,7 +22,6 @@ public class Primes {
 			}
 			if (!found && !prime.equals(BigInteger.ONE)) {
 				primes.add(prime);
-				// System.out.println(primes[i]);
 			}
 			prime = prime.add(BigInteger.ONE);
 		}
@@ -36,7 +34,6 @@ public class Primes {
 		for (int i = 1; i <= upper; i++) {
 			sieve.add(i);
 		}
-		// primes.add(new BigInteger(sieve.removeFirst().toString()));
 		sieve.removeFirst();
 		while (!sieve.isEmpty()) {
 			int e = sieve.removeFirst();
@@ -53,29 +50,6 @@ public class Primes {
 		return primes;
 	}
 
-	// private static boolean bSmooth(BigInteger number, BigInteger[] primes) {
-	// for (int i = 1; i < primes.length; ++i) {
-	// while (number.mod(primes[i]).equals(BigInteger.ZERO)) {
-	// // System.out.printf("%d*",primes[i]);
-	// number = number.divide(primes[i]);
-	// }
-	// }
-	// // System.out.printf("%d\n",number);
-	// return number.subtract(BigInteger.ONE).signum() == 0;
-	// }
-	//
-	// private static boolean bSmooth(BigInteger number, List<BigInteger>
-	// primes) {
-	// for (BigInteger big : primes) {
-	// while (number.mod(big).equals(BigInteger.ZERO)) {
-	// // System.out.print(big + "*");
-	// number = number.divide(big);
-	// }
-	// }
-	// // System.out.println(number);
-	// return number.subtract(BigInteger.ONE).signum() == 0;
-	// }
-
 	private static List<BigInteger> genRs(int lValue, BigInteger nValue,
 			List<BigInteger> primes, List<String> m) {
 		int block = 20;
@@ -83,9 +57,7 @@ public class Primes {
 		int jump = 0;
 		int k = 1;
 		while (rs.size() < lValue) {
-			// for (int k = 1; k <= block; k++) {
 			BigInteger ki = new BigInteger(Integer.toString(k));
-			// System.out.println("K: " + ki);
 			int start = k - block - (k / 10);
 			int stop = k + block + (k / 10);
 			if (start < 1) {
@@ -93,15 +65,9 @@ public class Primes {
 			}
 			for (int j = start; j <= stop; j++) {
 				BigInteger ji = new BigInteger(Integer.toString(j + jump));
-				// System.out.println("J: " + ji);
 				BigInteger r = bigIntSqRootFloor(ki.multiply(nValue)).add(ji);
 				BigInteger r2 = r.pow(2).mod(nValue);
 				String binrow = genBinaryRow(r2, primes);
-				// if (bSmooth(r2, primes)) {
-				// System.out.println("k: " + ki + " j: " + ji + " r: "
-				// + r + " r2: " + r2);
-				// System.out.println(genBinaryRow(r2, primes));
-				// String binrow = genBinaryRow(r2,primes);
 				if (binrow != null && !m.contains(binrow)) {
 					m.add(binrow);
 					rs.add(r);
@@ -112,8 +78,6 @@ public class Primes {
 					}
 				}
 			}
-			// }
-			// jump += block;
 			k++;
 		}
 		return rs;
@@ -210,7 +174,7 @@ public class Primes {
 		for (String col : columns) {
 			result += multiply(x, col);
 		}
-		System.out.println(x);
+//		System.out.println(x);
 		if (isZero(result)) {
 			System.out.println("Trying a solution: " + x);
 			BigInteger x2 = BigInteger.ONE;
@@ -234,6 +198,7 @@ public class Primes {
 				System.out.println("Factor 2: " + factor2);
 				return true;
 			}
+			System.out.println("Did not find roots");
 		}
 		return false;
 	}
@@ -243,9 +208,9 @@ public class Primes {
 		for (BigInteger i = BigInteger.ZERO; BigInteger.ONE
 				.shiftLeft(primes.size()).subtract(i).signum() == 1; i = i
 				.add(BigInteger.ONE)) {
-			// Random rand = new Random();
-			// while (true) {
-			// BigInteger i = new BigInteger(primes.size(), rand);
+//			 Random rand = new Random();
+//			 while (true) {
+//			 BigInteger i = new BigInteger(primes.size(), rand);
 			String x = bigIntToBinaryString(i, primes.size());
 			if (!isZero(x)) {
 				if (trySolution(x, columns, N, rs)) {
@@ -313,33 +278,22 @@ public class Primes {
 //	}
 
 	public static void main(String[] args) {
-		// for(BigInteger big: genPrimes(1000)){
-		// System.out.println(big);
-		// }
-		// System.out.println(bSmooth(new BigInteger("264"),genPrimes(12)));
-		// System.out.println(genPrimesLessThan(1000));
-		// System.out.println(bSmooth(new
-		// BigInteger("714"),genPrimesLessThan(30)));
-		// BigInteger N = new BigInteger("98183149570452781423651");
+		 BigInteger N = new BigInteger("98183149570452781423651");
 		// BigInteger N = new BigInteger("392742364277");
 		// BigInteger N = new BigInteger("3205837387");
-		// BigInteger N = new BigInteger("31741649");
+//		 BigInteger N = new BigInteger("31741649");
 		// BigInteger N = new BigInteger("307561");
 		// BigInteger N = new BigInteger("323");
-		BigInteger N = new BigInteger("16637");
-		List<BigInteger> primes = genPrimes(99);
+//		BigInteger N = new BigInteger("16637");
+		int diff = 5;
+		int l = 1000;
+		List<BigInteger> primes = genPrimes(l-diff);
 		// List<BigInteger> primes = genPrimesLessThan(100);
 		System.out.println("Primes generated...");
-		// System.out.println(primes);
-		// System.out.println(genPrimesLessThan(100));
 		List<String> m = new LinkedList<String>();
-		List<BigInteger> rs = genRs(100, N, primes, m);
+		List<BigInteger> rs = genRs(l, N, primes, m);
 		System.out.println("R:s generated...");
 		String[] columns = getMatrixColumns(m, primes);
-		// System.out.println(m);
-		// for (String col : columns){
-		// System.out.println(col);
-		// }
 		findSolutions(columns, rs, primes, N);
 
 	}
