@@ -2,9 +2,9 @@ package project1;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 public class Primes {
 
@@ -51,34 +51,32 @@ public class Primes {
 	}
 
 	private static List<BigInteger> genRs(int lValue, BigInteger nValue,
-			List<BigInteger> primes, List<String> m) {
-		int block = 20;
+			List<BigInteger> primes, List<BitSet> m,int block,int factor,int jump) {
 		LinkedList<BigInteger> rs = new LinkedList<BigInteger>();
-		int jump = 0;
 		int k = 1;
 		while (rs.size() < lValue) {
 			BigInteger ki = new BigInteger(Integer.toString(k));
-			int start = k - block - (k / 10);
-			int stop = k + block + (k / 10);
+			int start = k - block - (k / 2);
+			int stop = k + block + (k / 2);
 			if (start < 1) {
 				start = 1;
 			}
-			for (int j = start; j <= stop; j++) {
-				BigInteger ji = new BigInteger(Integer.toString(j + jump));
+			for (int j = start; j <= stop; j+=jump) {
+				BigInteger ji = new BigInteger(Integer.toString(j));
 				BigInteger r = bigIntSqRootFloor(ki.multiply(nValue)).add(ji);
 				BigInteger r2 = r.pow(2).mod(nValue);
-				String binrow = genBinaryRow(r2, primes);
+				BitSet binrow = genBinaryRow(r2, primes);
 				if (binrow != null && !m.contains(binrow)) {
 					m.add(binrow);
 					rs.add(r);
-					// System.out.println("Added: " + rs.size() + " K: " + ki
-					// + " J: " + ji);
+					System.out.println("Added: " + rs.size() + " K: " + ki
+							+ " J: " + ji);
 					if (rs.size() >= lValue) {
 						return rs;
 					}
 				}
 			}
-			k++;
+			k+=jump;
 		}
 		return rs;
 	}
@@ -102,16 +100,16 @@ public class Primes {
 		return y;
 	}
 
-	private static String genBinaryRow(BigInteger number,
+	private static BitSet genBinaryRow(BigInteger number,
 			List<BigInteger> primes) {
-		String row = "";
-		for (BigInteger big : primes) {
-			int i = 0;
+		BitSet row = new BitSet(primes.size());
+		for (int j = 0; j < primes.size(); j++) {
+			BigInteger big = primes.get(j);
 			while (number.mod(big).equals(BigInteger.ZERO)) {
-				i++;
 				number = number.divide(big);
+				row.set(j);
+				;
 			}
-			row += Integer.toString(i % 2);
 		}
 		if (number.subtract(BigInteger.ONE).signum() == 0) {
 			return row;
@@ -139,15 +137,18 @@ public class Primes {
 		return true;
 	}
 
-	private static String[] getMatrixColumns(List<String> m,
+	private static BitSet[] getMatrixColumns(List<BitSet> m,
 			List<BigInteger> primes) {
-		String[] columns = new String[primes.size()];
-		for (String row : m) {
-			for (int i = 0; i < row.length(); i++) {
+		BitSet[] columns = new BitSet[primes.size()];
+		for (int j = 0; j < m.size(); j++) {
+			BitSet row = m.get(j);
+			for (int i = 0; i < primes.size(); i++) {
 				if (columns[i] == null) {
-					columns[i] = "";
+					columns[i] = new BitSet(m.size());
 				}
-				columns[i] += row.charAt(i);
+				if (row.get(i)) {
+					columns[i].set(j);
+				}
 			}
 		}
 		return columns;
@@ -168,19 +169,142 @@ public class Primes {
 		return x;
 	}
 
-	private static boolean trySolution(String x, String[] columns,
-			BigInteger N, List<BigInteger> rs) {
-		String result = "";
-		for (String col : columns) {
-			result += multiply(x, col);
+//	private static boolean trySolution(String x, String[] columns,
+//			BigInteger N, List<BigInteger> rs) {
+//		String result = "";
+//		for (String col : columns) {
+//			result += multiply(x, col);
+//		}
+//		// System.out.println(x);
+//		if (isZero(result)) {
+//			System.out.println("Trying a solution: " + x);
+//			BigInteger x2 = BigInteger.ONE;
+//			BigInteger y2 = BigInteger.ONE;
+//			for (int j = 0; j < x.length(); j++) {
+//				if (x.charAt(j) == '1') {
+//					x2 = x2.multiply(rs.get(j));
+//					y2 = y2.multiply(rs.get(j)
+//							.modPow(BigInteger.valueOf(2L), N));
+//				}
+//			}
+//			x2 = x2.mod(N);
+//			y2 = bigIntSqRootFloor(y2).mod(N);
+//			// System.out.println(x2);
+//			// System.out.println(y2);
+//			BigInteger gcd = N.gcd(y2.subtract(x2));
+//			if (!gcd.equals(BigInteger.ONE) && !gcd.equals(N)) {
+//				BigInteger factor1 = gcd;
+//				BigInteger factor2 = N.divide(factor1);
+//				System.out.println("Factor 1: " + factor1);
+//				System.out.println("Factor 2: " + factor2);
+//				return true;
+//			}
+//			System.out.println("Did not find roots");
+//		}
+//		return false;
+//	}
+
+//	private static void findSolutions(BitSet[] columns, List<BigInteger> rs,
+//			List<BigInteger> primes, BigInteger N) {
+		// for (BigInteger i = BigInteger.ZERO; BigInteger.ONE
+		// .shiftLeft(primes.size()).subtract(i).signum() == 1; i = i
+		// .add(BigInteger.ONE)) {
+		// // Random rand = new Random();
+		// // while (true) {
+		// // BigInteger i = new BigInteger(primes.size(), rand);
+		// String x = bigIntToBinaryString(i, primes.size());
+		// if (!isZero(x)) {
+		// if (trySolution(x, columns, N, rs)) {
+		// return;
+		// }
+		// }
+		// }
+
+		// int threads = 4;
+		// BigInteger lower = BigInteger.ONE;
+		// BigInteger size =
+		// BigInteger.ONE.shiftLeft(primes.size()).divide(BigInteger.ONE.shiftLeft(2));
+		// BigInteger upper = size;
+		// Thread[] solvers = new Solver[threads];
+		// for(int i = 0; i < threads; i++){
+		// solvers[i] = new Solver(lower, upper, columns, N, rs, primes,
+		// solvers);
+		// lower = upper;
+		// if (i < threads -1){
+		// upper = upper.add(size);
+		// }else{
+		// upper = BigInteger.ONE.shiftLeft(primes.size());
+		// }
+		// }
+		// for(Thread t: solvers){
+		// t.start();
+		// }
+//	}
+
+	// private static class Solver extends Thread {
+	// private BigInteger lower;
+	// private BigInteger upper;
+	// private String[] columns;
+	// private BigInteger N;
+	// private List<BigInteger> rs;
+	// private List<BigInteger> primes;
+	// private Thread[] solvers;
+	//
+	// public Solver(BigInteger lower, BigInteger upper, String[] columns,
+	// BigInteger N,
+	// List<BigInteger> rs, List<BigInteger> primes, Thread[] solvers) {
+	// super();
+	// this.lower = lower;
+	// this.upper = upper;
+	// this.columns = columns;
+	// this.N = N;
+	// this.rs = rs;
+	// this.primes = primes;
+	// this.solvers = solvers;
+	// }
+	//
+	// public void run() {
+	// for (BigInteger i = lower; upper.subtract(i).signum() == 1
+	// && !isInterrupted(); i = i.add(BigInteger.ONE)) {
+	// // Random rand = new Random();
+	// // while (true) {
+	// // BigInteger i = new BigInteger(primes.size(), rand);
+	// String x = bigIntToBinaryString(i, primes.size());
+	// if (!isZero(x)) {
+	// if (trySolution(x, columns, N, rs)) {
+	// for(Thread t: solvers){
+	// t.interrupt();
+	// }
+	// }
+	// }
+	// }
+	//
+	// }
+	// }
+
+	private static boolean trySolution(BitSet x, BitSet[] columns,BigInteger N, List<BigInteger> rs,int rows) {
+//		for (int i = 0; i < x.size(); i++){
+//			if (x.get(i)){
+//				System.out.println("Row: " + i + " to be used");
+//			}
+//		}
+		
+		BitSet result = new BitSet(columns.length);
+		for (int i = 0; i < columns.length; i++){
+			BitSet test = new BitSet(rows);
+			test.or(x);
+			test.and(columns[i]);
+			if ( test.cardinality() % 2 == 1){
+				result.set(i);
+			}
+			
 		}
-//		System.out.println(x);
-		if (isZero(result)) {
+		if (result.isEmpty()){
 			System.out.println("Trying a solution: " + x);
 			BigInteger x2 = BigInteger.ONE;
 			BigInteger y2 = BigInteger.ONE;
-			for (int j = 0; j < x.length(); j++) {
-				if (x.charAt(j) == '1') {
+			for (int j = 0; j < rows; j++) {
+				if (x.get(j)) {
 					x2 = x2.multiply(rs.get(j));
 					y2 = y2.multiply(rs.get(j)
 							.modPow(BigInteger.valueOf(2L), N));
@@ -188,8 +312,8 @@ public class Primes {
 			}
 			x2 = x2.mod(N);
 			y2 = bigIntSqRootFloor(y2).mod(N);
-			// System.out.println(x2);
-			// System.out.println(y2);
+//			// System.out.println(x2);
+//			// System.out.println(y2);
 			BigInteger gcd = N.gcd(y2.subtract(x2));
 			if (!gcd.equals(BigInteger.ONE) && !gcd.equals(N)) {
 				BigInteger factor1 = gcd;
@@ -202,99 +326,73 @@ public class Primes {
 		}
 		return false;
 	}
-
-	private static void findSolutions(String[] columns, List<BigInteger> rs,
+	
+	private static boolean reduces(BitSet acc, BitSet test, int size){
+//		return test.cardinality() < acc.cardinality();
+		if (test.cardinality() < acc.cardinality()){
+			BitSet temp = new BitSet(size);
+			temp.or(acc);
+			temp.flip(0,size);
+			temp.and(test);
+			return temp.cardinality() == 0;
+		}
+		return false;
+		
+	}
+	
+	private static void findSolutions(List<BitSet> m, List<BigInteger> rs,
 			List<BigInteger> primes, BigInteger N) {
-		for (BigInteger i = BigInteger.ZERO; BigInteger.ONE
-				.shiftLeft(primes.size()).subtract(i).signum() == 1; i = i
-				.add(BigInteger.ONE)) {
-//			 Random rand = new Random();
-//			 while (true) {
-//			 BigInteger i = new BigInteger(primes.size(), rand);
-			String x = bigIntToBinaryString(i, primes.size());
-			if (!isZero(x)) {
-				if (trySolution(x, columns, N, rs)) {
-					return;
+		List<BitSet> solutions = new LinkedList<BitSet>();
+		for (int i = 0; i < m.size(); i++) {
+			BitSet acc = new BitSet(primes.size());
+			acc.or(m.get(i));
+			BitSet x = new BitSet(m.size());
+			x.set(i);
+			for (int j = 0; j < m.size(); j++) {
+				if (j != i) {
+					BitSet test = new BitSet(primes.size());
+					test.or(acc);
+					test.xor(m.get(j));
+					if (reduces(acc,test,primes.size())) {
+						acc = test;
+						x.set(j);
+					}
 				}
 			}
+			if (acc.isEmpty()) {
+				solutions.add(x);
+			}
 		}
-//		int  threads = 4;
-//		BigInteger lower = BigInteger.ONE;
-//		BigInteger size = BigInteger.ONE.shiftLeft(primes.size()).divide(BigInteger.ONE.shiftLeft(2));
-//		BigInteger upper = size;
-//		Thread[] solvers = new Solver[threads];
-//		for(int i = 0; i < threads; i++){
-//			solvers[i] = new Solver(lower, upper, columns, N, rs, primes, solvers);
-//			lower = upper;
-//			if (i < threads -1){
-//				upper = upper.add(size);				
-//			}else{
-//				upper = BigInteger.ONE.shiftLeft(primes.size());
-//			}
-//		}
-//		for(Thread t: solvers){
-//			t.start();
-//		}
+		System.out.println(solutions);
+		for (BitSet x: solutions){
+			if (trySolution(x, getMatrixColumns(m, primes), N, rs,m.size())){
+				return;
+			}
+		}
 	}
 
-//	private static class Solver extends Thread {
-//		private BigInteger lower;
-//		private BigInteger upper;
-//		private String[] columns;
-//		private BigInteger N;
-//		private List<BigInteger> rs;
-//		private List<BigInteger> primes;
-//		private Thread[] solvers;
-//
-//		public Solver(BigInteger lower, BigInteger upper, String[] columns, BigInteger N,
-//				List<BigInteger> rs, List<BigInteger> primes, Thread[] solvers) {
-//			super();
-//			this.lower = lower;
-//			this.upper = upper;
-//			this.columns = columns;
-//			this.N = N;
-//			this.rs = rs;
-//			this.primes = primes;
-//			this.solvers = solvers;
-//		}
-//
-//		public void run() {
-//			for (BigInteger i = lower; upper.subtract(i).signum() == 1
-//					&& !isInterrupted(); i = i.add(BigInteger.ONE)) {
-//				// Random rand = new Random();
-//				// while (true) {
-//				// BigInteger i = new BigInteger(primes.size(), rand);
-//				String x = bigIntToBinaryString(i, primes.size());
-//				if (!isZero(x)) {
-//					if (trySolution(x, columns, N, rs)) {
-//						for(Thread t: solvers){
-//							t.interrupt();
-//						}
-//					}
-//				}
-//			}
-//
-//		}
-//	}
-
 	public static void main(String[] args) {
-		 BigInteger N = new BigInteger("98183149570452781423651");
-		// BigInteger N = new BigInteger("392742364277");
-		// BigInteger N = new BigInteger("3205837387");
+//		BigInteger N = new BigInteger("98183149570452781423651");
+//		 BigInteger N = new BigInteger("392742364277");
+		 BigInteger N = new BigInteger("3205837387");
 //		 BigInteger N = new BigInteger("31741649");
-		// BigInteger N = new BigInteger("307561");
-		// BigInteger N = new BigInteger("323");
-//		BigInteger N = new BigInteger("16637");
+//		 BigInteger N = new BigInteger("307561");
+//		 BigInteger N = new BigInteger("323");
+//		 BigInteger N = new BigInteger("16637");
 		int diff = 5;
 		int l = 1000;
-		List<BigInteger> primes = genPrimes(l-diff);
+		int block = 1000;
+		int factor = 1;
+		int jump = 1;
+		List<BigInteger> primes = genPrimes(l - diff);
 		// List<BigInteger> primes = genPrimesLessThan(100);
 		System.out.println("Primes generated...");
-		List<String> m = new LinkedList<String>();
-		List<BigInteger> rs = genRs(l, N, primes, m);
+		List<BitSet> m = new LinkedList<BitSet>();
+		List<BigInteger> rs = genRs(l, N, primes, m,block,factor,jump);
 		System.out.println("R:s generated...");
-		String[] columns = getMatrixColumns(m, primes);
-		findSolutions(columns, rs, primes, N);
+		//BitSet[] columns = getMatrixColumns(m, primes);
+		// findSolutions(columns, rs, primes, N);
+		findSolutions(m, rs, primes, N);
 
 	}
 
