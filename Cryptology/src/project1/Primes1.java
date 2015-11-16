@@ -50,7 +50,7 @@ public class Primes1 {
 		while (rs.size() < lValue) {
 			BigInteger ki = new BigInteger(Integer.toString(k));
 			BigInteger ji = new BigInteger(Integer.toString(j));
-			BigInteger r = bigIntSqRootFloor(ki.multiply(nValue)).add(ji);
+			BigInteger r = squareRoot(ki.multiply(nValue)).add(ji);
 			BigInteger r2 = r.pow(2).mod(nValue);
 			BitSet binrow = genBinaryRow(r2, primes);
 			if (binrow != null && !m.contains(binrow)) {
@@ -77,22 +77,35 @@ public class Primes1 {
 		return rs;
 	}
 
-	public static BigInteger bigIntSqRootFloor(BigInteger x)
-			throws IllegalArgumentException {
-		if (x.compareTo(BigInteger.ZERO) < 0) {
-			throw new IllegalArgumentException("Negative argument.");
-		}
-		
-		if (x.equals(BigInteger.ZERO) || x.equals(BigInteger.ONE)) {
-			return x;
-		} // end if
-		BigInteger two = BigInteger.valueOf(2L);
-		BigInteger y;
-		// starting with y = x / 2 avoids magnitude issues with x squared
-		for (y = x.divide(two); y.compareTo(x.divide(y)) > 0; y = ((x.divide(y))
-				.add(y)).divide(two))
-			;
-		return y;
+//	public static BigInteger squareRoot(BigInteger x)
+//			throws IllegalArgumentException {
+//		if (x.compareTo(BigInteger.ZERO) < 0) {
+//			throw new IllegalArgumentException("Negative argument.");
+//		}
+//		
+//		if (x.equals(BigInteger.ZERO) || x.equals(BigInteger.ONE)) {
+//			return x;
+//		} // end if
+//		BigInteger two = BigInteger.valueOf(2L);
+//		BigInteger y;
+//		// starting with y = x / 2 avoids magnitude issues with x squared
+//		for (y = x.divide(two); y.compareTo(x.divide(y)) > 0; y = ((x.divide(y))
+//				.add(y)).divide(two))
+//			;
+//		return y;
+//	}
+	
+	/** Calculate the square root of a BigInteger in logarithmic time */
+	public static BigInteger squareRoot(BigInteger x) { 
+	      BigInteger right = x, left = BigInteger.ZERO, mid; 
+	      while(right.subtract(left).compareTo(BigInteger.ONE) > 0) { 
+	            mid = (right.add(left)).shiftRight(1);
+	            if(mid.multiply(mid).compareTo(x) > 0) 
+	                  right = mid; 
+	            else 
+	                  left = mid; 
+	      } 
+	      return left; 
 	}
 
 	private static BitSet genBinaryRow(BigInteger number,
@@ -113,22 +126,22 @@ public class Primes1 {
 		}
 	}
 
-	private static BitSet[] getMatrixColumns(List<BitSet> m,
-			List<BigInteger> primes) {
-		BitSet[] columns = new BitSet[primes.size()];
-		for (int j = 0; j < m.size(); j++) {
-			BitSet row = m.get(j);
-			for (int i = 0; i < primes.size(); i++) {
-				if (columns[i] == null) {
-					columns[i] = new BitSet(m.size());
-				}
-				if (row.get(i)) {
-					columns[i].set(j);
-				}
-			}
-		}
-		return columns;
-	}
+//	private static BitSet[] getMatrixColumns(List<BitSet> m,
+//			List<BigInteger> primes) {
+//		BitSet[] columns = new BitSet[primes.size()];
+//		for (int j = 0; j < m.size(); j++) {
+//			BitSet row = m.get(j);
+//			for (int i = 0; i < primes.size(); i++) {
+//				if (columns[i] == null) {
+//					columns[i] = new BitSet(m.size());
+//				}
+//				if (row.get(i)) {
+//					columns[i].set(j);
+//				}
+//			}
+//		}
+//		return columns;
+//	}
 
 	private static boolean trySolution(BitSet x, BitSet[] columns,
 			BigInteger N, List<BigInteger> rs, int rows) {
@@ -144,7 +157,7 @@ public class Primes1 {
 				}
 			}
 			x2 = x2.mod(N);
-			y2 = bigIntSqRootFloor(y2).mod(N);
+			y2 = squareRoot(y2).mod(N);
 			// // System.out.println(x2);
 			// // System.out.println(y2);
 			BigInteger gcd = N.gcd(y2.subtract(x2));
@@ -159,25 +172,25 @@ public class Primes1 {
 		return false;
 	}
 
-	private static List<BitSet> copyMatrix(List<BitSet> matrix) {
-		List<BitSet> copy = new LinkedList<BitSet>();
-		for (BitSet set : matrix) {
-			BitSet bits = new BitSet(set.size());
-			bits.or(set);
-			copy.add(bits);
-		}
-		return copy;
-	}
+//	private static List<BitSet> copyMatrix(List<BitSet> matrix) {
+//		List<BitSet> copy = new LinkedList<BitSet>();
+//		for (BitSet set : matrix) {
+//			BitSet bits = new BitSet(set.size());
+//			bits.or(set);
+//			copy.add(bits);
+//		}
+//		return copy;
+//	}
 
-	private static int rowWithBitSet(List<BitSet> matrix, int index,
-			Set<Integer> removed) {
-		for (int i = 0; i < matrix.size(); i++) {
-			if (matrix.get(i).get(index) && !removed.contains(i)) {
-				return i;
-			}
-		}
-		return -1;
-	}
+//	private static int rowWithBitSet(List<BitSet> matrix, int index,
+//			Set<Integer> removed) {
+//		for (int i = 0; i < matrix.size(); i++) {
+//			if (matrix.get(i).get(index) && !removed.contains(i)) {
+//				return i;
+//			}
+//		}
+//		return -1;
+//	}
 /*
 	private static void findSolutions(List<BitSet> m, List<BigInteger> rs,
 			List<BigInteger> primes, BigInteger N) {
@@ -227,13 +240,11 @@ public class Primes1 {
 
 	}
 */
-	public static void createInputFile(LinkedList<BitSet> list) throws IOException{
+	public static void createInputFile(LinkedList<BitSet> list, int M, int N) throws IOException{
 		System.out.println("Generate Input File");
 		try {
 			File f = new File("HelpFunction/input.txt");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(f));
-			int M = list.size();
-			int N = list.getLast().size();
 			writer.write(M+" "+N+"\n");
 			String s;
 			for(int i = 0; i < M; i++){
@@ -279,8 +290,10 @@ public class Primes1 {
 	
 	public static String findSolutions() throws IOException, InterruptedException{
 		StringBuilder sb = new StringBuilder();
+		Process p = Runtime.getRuntime().exec("g++ GaussBin.cpp",null,new File("./HelpFunction"));
+		p.waitFor();
 		String command = "./HelpFunction/a.out";
-		ProcessBuilder pb = new ProcessBuilder(command,"input.txt","output.txt");
+		ProcessBuilder pb = new ProcessBuilder(command,"./HelpFunction/input.txt","./HelpFunction/output.txt");
 		Process process = pb.start();
 		
 		BufferedReader br =  new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -311,7 +324,7 @@ public class Primes1 {
 		List<BigInteger> rs = genRs(l, N, primes, m, block, factor, jump);
 		System.out.println("R:s generated...");
 		
-		createInputFile(m);
+		createInputFile(m,m.size(),primes.size());
 		String rejected = findSolutions();
 		System.out.println(rejected);
 		//findSolutions(m, rs, primes, N);
