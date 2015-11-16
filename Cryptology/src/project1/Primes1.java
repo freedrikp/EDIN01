@@ -53,8 +53,8 @@ public class Primes1 {
 				m.add(binrow);
 				rs.add(r);
 				r2s.add(r2);
-//				System.out.println("Added: " + rs.size() + " K: " + ki + " J: "
-//						+ ji);
+				System.out.println("Added: " + rs.size() + " K: " + ki + " J: "
+						+ ji);
 				if (rs.size() >= lValue) {
 					return;
 				}
@@ -117,7 +117,7 @@ public class Primes1 {
 			}
 		}
 		x2 = x2.mod(N);
-		y2 = squareRoot(y2).mod(N);
+		y2 = squareRoot(y2.mod(N));
 		// // System.out.println(x2);
 		// // System.out.println(y2);
 		BigInteger gcd = N.gcd(y2.subtract(x2));
