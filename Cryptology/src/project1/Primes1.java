@@ -11,10 +11,8 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class Primes1 {
 
@@ -56,8 +54,8 @@ public class Primes1 {
 			if (binrow != null && !m.contains(binrow)) {
 				m.add(binrow);
 				rs.add(r);
-				System.out.println("Added: " + rs.size() + " K: " + ki + " J: "
-						+ ji);
+//				System.out.println("Added: " + rs.size() + " K: " + ki + " J: "
+//						+ ji);
 				if (rs.size() >= lValue) {
 					return rs;
 				}
@@ -77,24 +75,6 @@ public class Primes1 {
 		return rs;
 	}
 
-//	public static BigInteger squareRoot(BigInteger x)
-//			throws IllegalArgumentException {
-//		if (x.compareTo(BigInteger.ZERO) < 0) {
-//			throw new IllegalArgumentException("Negative argument.");
-//		}
-//		
-//		if (x.equals(BigInteger.ZERO) || x.equals(BigInteger.ONE)) {
-//			return x;
-//		} // end if
-//		BigInteger two = BigInteger.valueOf(2L);
-//		BigInteger y;
-//		// starting with y = x / 2 avoids magnitude issues with x squared
-//		for (y = x.divide(two); y.compareTo(x.divide(y)) > 0; y = ((x.divide(y))
-//				.add(y)).divide(two))
-//			;
-//		return y;
-//	}
-	
 	/** Calculate the square root of a BigInteger in logarithmic time */
 	public static BigInteger squareRoot(BigInteger x) { 
 	      BigInteger right = x, left = BigInteger.ZERO, mid; 
@@ -126,27 +106,27 @@ public class Primes1 {
 		}
 	}
 
-//	private static BitSet[] getMatrixColumns(List<BitSet> m,
-//			List<BigInteger> primes) {
-//		BitSet[] columns = new BitSet[primes.size()];
-//		for (int j = 0; j < m.size(); j++) {
-//			BitSet row = m.get(j);
-//			for (int i = 0; i < primes.size(); i++) {
-//				if (columns[i] == null) {
-//					columns[i] = new BitSet(m.size());
-//				}
-//				if (row.get(i)) {
-//					columns[i].set(j);
-//				}
-//			}
-//		}
-//		return columns;
-//	}
+	private static BitSet[] getMatrixColumns(List<BitSet> m,
+			List<BigInteger> primes) {
+		BitSet[] columns = new BitSet[primes.size()];
+		for (int j = 0; j < m.size(); j++) {
+			BitSet row = m.get(j);
+			for (int i = 0; i < primes.size(); i++) {
+				if (columns[i] == null) {
+					columns[i] = new BitSet(m.size());
+				}
+				if (row.get(i)) {
+					columns[i].set(j);
+				}
+			}
+		}
+		return columns;
+	}
 
 	private static boolean trySolution(BitSet x, BitSet[] columns,
 			BigInteger N, List<BigInteger> rs, int rows) {
 		
-			System.out.println("Trying a solution: " + x);
+//			System.out.println("Trying a solution: " + x);
 			BigInteger x2 = BigInteger.ONE;
 			BigInteger y2 = BigInteger.ONE;
 			for (int j = 0; j < rows; j++) {
@@ -164,82 +144,55 @@ public class Primes1 {
 			if (!gcd.equals(BigInteger.ONE) && !gcd.equals(N)) {
 				BigInteger factor1 = gcd;
 				BigInteger factor2 = N.divide(factor1);
-				System.out.println("Factor 1: " + factor1);
+				
+				System.out.println("\nFactor 1: " + factor1);
 				System.out.println("Factor 2: " + factor2);
 				return true;
 			}
-			System.out.println("Did not find roots");
+//			System.out.println("Did not find roots");
 		return false;
 	}
 
-//	private static List<BitSet> copyMatrix(List<BitSet> matrix) {
-//		List<BitSet> copy = new LinkedList<BitSet>();
-//		for (BitSet set : matrix) {
-//			BitSet bits = new BitSet(set.size());
-//			bits.or(set);
-//			copy.add(bits);
-//		}
-//		return copy;
-//	}
-
-//	private static int rowWithBitSet(List<BitSet> matrix, int index,
-//			Set<Integer> removed) {
-//		for (int i = 0; i < matrix.size(); i++) {
-//			if (matrix.get(i).get(index) && !removed.contains(i)) {
-//				return i;
-//			}
-//		}
-//		return -1;
-//	}
-/*
-	private static void findSolutions(List<BitSet> m, List<BigInteger> rs,
-			List<BigInteger> primes, BigInteger N) {
-		List<BitSet> solutions = new LinkedList<BitSet>();
-
-		List<BitSet> matrix = copyMatrix(m);
-		for (int i = 0; i < matrix.size(); i++) {
-			BitSet set = new BitSet(matrix.size());
-			set.set(i);
-			solutions.add(set);
-		}
-		HashSet<Integer> removed = new HashSet<Integer>();
-		for (int i = 0; i < primes.size(); i++) {
-			int set = rowWithBitSet(matrix, i, removed);
-			if (set == -1) {
-				System.out.println("No row with bit: " + i + " set");
-				continue;
-			}
-			System.out.println("Bit: " + i + " eliminated");
-			// BitSet bits = matrix.remove(set);
-			// solutions.remove(set);
-			BitSet bits = matrix.get(set);
-			removed.add(set);
-			for (int j = 0; j < matrix.size(); j++) {
-				if (removed.contains(j)) {
-					continue;
-				}
-				BitSet row = matrix.get(j);
-				if (row.get(i)) {
-					row.xor(bits);
-					solutions.get(j).set(set);
-				}
-			}
-		}
-
-		for (int i = 0; i < solutions.size(); i++) {
-			if (removed.contains(i)) {
-				continue;
-			}
-			BitSet x = solutions.get(i);
-//			 System.out.println(x);
-//			System.out.println(matrix.get(i));
-			if (trySolution(x, getMatrixColumns(m, primes), N, rs, m.size())) {
-				return;
-			}
-		}
-
+	private static BitSet createFromString(String s) {
+	    BitSet t = new BitSet(s.length());
+	    int last = s.length() - 1;
+	    for (int i = last; i >= 0; i--) {
+	        if ( s.charAt(i) == '1'){
+	            t.set(last - i);                            
+	        }               
+	    }
+	    return t;
 	}
-*/
+	private static void testSolutions(List<BitSet> m, List<BigInteger> rs,
+			List<BigInteger> primes, BigInteger N) {
+		System.out.println("test solution file");
+		try {
+			BufferedReader br = new BufferedReader(new FileReader("HelpFunction/o"));
+			int solutionsN = Integer.parseInt(br.readLine());
+			System.out.println("Start testing: ");
+			for (int i = 0; i < solutionsN; i++){
+				String solution = br.readLine().replaceAll("\\s+","");
+				
+				if(i%20==0)
+					System.out.print(i + " ");
+				
+				BitSet x = createFromString(solution);
+				
+				if (trySolution(x, getMatrixColumns(m, primes), N, rs, m.size())) 
+					return;
+				
+			}
+				br.close();
+				
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
+	
 	public static void createInputFile(LinkedList<BitSet> list, int M, int N) throws IOException{
 		System.out.println("Generate Input File");
 		try {
@@ -265,26 +218,21 @@ public class Primes1 {
 		
 	}
 	public static ArrayList<BigInteger> readFile(String s){
-
 		ArrayList<BigInteger> data = new ArrayList<BigInteger>();
+
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(s));
-			
 			int limit = Integer.parseInt(br.readLine());
 			
-			for(int i = 0; i < limit; i++){
+			for(int i = 0; i < limit; i++)
 				data.add(new BigInteger(br.readLine()));
-			}
 			
 			br.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (FileNotFoundException e ) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-		
 		return data;
 	}
 	
@@ -298,38 +246,38 @@ public class Primes1 {
 		
 		BufferedReader br =  new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line = null;
-		while ((line = br.readLine()) != null) {
+		
+		while ((line = br.readLine()) != null) 
 			sb.append(line + System.getProperty("line.separator"));
-		}
+		
 		
 		int errCode = process.waitFor();
-		if (errCode != 0){
+		
+		if (errCode != 0)
 			System.out.println("Error from process "+ errCode);
-		}
+		
 
 		return sb.toString();
 	}
 	public static void main(String[] args) throws IOException, InterruptedException {
+		
 		ArrayList<BigInteger> numbers = readFile("Data/input.txt");
-		BigInteger N = numbers.get(3);
+		
+		BigInteger N = numbers.get(2);
+		
 		int diff = 10;
 		int l = 1000;
 		List<BigInteger> primes = genPrimes(l - diff);
-
-		
 		int block = 10;
 		int factor = 20;
 		int jump = 1;
 		LinkedList<BitSet> m = new LinkedList<BitSet>();
 		List<BigInteger> rs = genRs(l, N, primes, m, block, factor, jump);
 		System.out.println("R:s generated...");
-		
 		createInputFile(m,m.size(),primes.size());
-		String rejected = findSolutions();
-		System.out.println(rejected);
-		//findSolutions(m, rs, primes, N);
-		
-
+		findSolutions();
+		System.out.println("The number is "+N.toString());
+		testSolutions(m, rs, primes, N);
 	}
 
 }

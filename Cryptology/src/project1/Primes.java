@@ -473,9 +473,9 @@ public class Primes {
 		// BigInteger N = new BigInteger("98183149570452781423651");
 		// BigInteger N = new BigInteger("392742364277");
 //		 BigInteger N = new BigInteger("3205837387");
-		 BigInteger N = new BigInteger("31741649");
+//		 BigInteger N = new BigInteger("31741649");
 //		BigInteger N = new BigInteger("307561");
-		// BigInteger N = new BigInteger("323");
+		 BigInteger N = new BigInteger("323");
 		// BigInteger N = new BigInteger("16637");
 		int diff = 10;
 		int l = 1000;
