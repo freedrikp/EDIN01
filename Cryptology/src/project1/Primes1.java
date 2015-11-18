@@ -39,38 +39,73 @@ public class Primes1 {
 	private static void genRs(List<BigInteger> rs, List<BigInteger> r2s,
 			int lValue, BigInteger nValue, List<BigInteger> primes,
 			List<BitSet> m, int block, int jump) {
+		System.out.println("Generating Rs...");
+		// int k = 1;
+		// int j = 1;
+		// boolean turn = false;
+		// int increased = 0;
+		// while (rs.size() < lValue) {
+		// BigInteger ki = new BigInteger(Integer.toString(k));
+		// BigInteger ji = new BigInteger(Integer.toString(j));
+		// BigInteger r = squareRoot(ki.multiply(nValue)).add(ji);
+		// BigInteger r2 = r.pow(2).mod(nValue);
+		// BitSet binrow = genBinaryRow(r2, primes);
+		// if (binrow != null && !m.contains(binrow)) {
+		// m.add(binrow);
+		// rs.add(r);
+		// r2s.add(r2);
+		// System.out.println("Added: " + rs.size() + " K: " + ki + " J: "
+		// + ji);
+		// if (rs.size() >= lValue) {
+		// return;
+		// }
+		// }
+		// if (turn) {
+		// k += jump;
+		// } else {
+		// j += jump;
+		// }
+		// increased += jump;
+		// if (increased % block == 0) {
+		// increased = 0;
+		// turn = !turn;
+		// }
+		//
+		// }
+
 		int k = 1;
-		int j = 1;
-		boolean turn = false;
-		int increased = 0;
 		while (rs.size() < lValue) {
 			BigInteger ki = new BigInteger(Integer.toString(k));
-			BigInteger ji = new BigInteger(Integer.toString(j));
-			BigInteger r = squareRoot(ki.multiply(nValue)).add(ji);
-			BigInteger r2 = r.pow(2).mod(nValue);
-			BitSet binrow = genBinaryRow(r2, primes);
-			if (binrow != null && !m.contains(binrow)) {
-				m.add(binrow);
-				rs.add(r);
-				r2s.add(r2);
-				System.out.println("Added: " + rs.size() + " K: " + ki + " J: "
-						+ ji);
-				if (rs.size() >= lValue) {
-					return;
-				}
+			int stop = k + k;
+			// int j = k - block;
+			int j = 1;
+			if (j < 1) {
+				j = 1;
 			}
-			if (turn) {
-				k += jump;
-			} else {
+			while (j <= stop && rs.size() < lValue) {
+				BigInteger ji = new BigInteger(Integer.toString(j));
+				BigInteger r = squareRoot(ki.multiply(nValue)).add(ji);
+				BigInteger r2 = r.pow(2).mod(nValue);
+				BitSet binrow = genBinaryRow(r2, primes);
+				if (binrow != null && !m.contains(binrow)) {
+					m.add(binrow);
+					rs.add(r);
+					r2s.add(r2);
+//					System.out.println("Added: " + rs.size() + " K: " + ki
+//							+ " J: " + ji);
+				}
 				j += jump;
 			}
-			increased += jump;
-			if (increased % block == 0) {
-				increased = 0;
-				turn = !turn;
-			}
-
+			k += jump;
 		}
+		System.out.println("Rs generated");
+		// for (int i = 0; i < m.size(); i++){
+		// for (int j = 0; j< m.size(); j++){
+		// if (i != j && m.get(i).equals(m.get(j))){
+		// System.out.println("Something is very wrong");
+		// }
+		// }
+		// }
 	}
 
 	/** Calculate the square root of a BigInteger in logarithmic time */
@@ -91,17 +126,16 @@ public class Primes1 {
 		BitSet row = new BitSet(primes.size());
 		for (int j = 0; j < primes.size(); j++) {
 			BigInteger big = primes.get(j);
+			int nDivs = 0;
 			while (number.mod(big).equals(BigInteger.ZERO)) {
 				number = number.divide(big);
+				nDivs++;
+			}
+			if (nDivs % 2 != 0) {
 				row.set(j);
-				;
 			}
 		}
-		if (number.subtract(BigInteger.ONE).signum() == 0) {
-			return row;
-		} else {
-			return null;
-		}
+		return number.compareTo(BigInteger.ONE) == 0 ? row : null;
 	}
 
 	private static boolean trySolution(BitSet x, BigInteger N,
@@ -117,7 +151,7 @@ public class Primes1 {
 			}
 		}
 		x2 = x2.mod(N);
-		y2 = squareRoot(y2.mod(N));
+		y2 = squareRoot(y2).mod(N);
 		// // System.out.println(x2);
 		// // System.out.println(y2);
 		BigInteger gcd = N.gcd(y2.subtract(x2));
@@ -151,7 +185,7 @@ public class Primes1 {
 
 	private static void testSolutions(List<BitSet> m, List<BigInteger> rs,
 			List<BigInteger> r2s, List<BigInteger> primes, BigInteger N) {
-		System.out.println("test solution file");
+		System.out.println("Testing solutions...");
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(
 					"HelpFunction/output.txt"));
@@ -182,7 +216,7 @@ public class Primes1 {
 
 	public static void createInputFile(LinkedList<BitSet> list, int M, int N)
 			throws IOException {
-		System.out.println("Generate Input File");
+		System.out.println("Generating input file...");
 		try {
 			File f = new File("HelpFunction/input.txt");
 			BufferedWriter writer = new BufferedWriter(new FileWriter(f));
@@ -198,11 +232,10 @@ public class Primes1 {
 			}
 			writer.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		System.out.println("Finish Generate Input File");
+		System.out.println("Input file generated");
 
 	}
 
@@ -213,8 +246,9 @@ public class Primes1 {
 			BufferedReader br = new BufferedReader(new FileReader(s));
 			int limit = Integer.parseInt(br.readLine());
 
-			for (int i = 0; i < limit; i++)
+			for (int i = 0; i < limit; i++){
 				data.add(new BigInteger(br.readLine()));
+			}
 
 			br.close();
 		} catch (FileNotFoundException e) {
@@ -228,26 +262,34 @@ public class Primes1 {
 	public static String findSolutions() throws IOException,
 			InterruptedException {
 		StringBuilder sb = new StringBuilder();
-		Process p = Runtime.getRuntime().exec("g++ GaussBin.cpp", null,
-				new File("./HelpFunction"));
-		p.waitFor();
-		String command = "./HelpFunction/a.out";
+		if (!new File("./HelpFunction/gauss").exists()) {
+			System.out.println("Compiling GaussBin");
+			Process p = Runtime.getRuntime().exec("g++ -o gauss GaussBin.cpp", null,
+					new File("./HelpFunction"));
+			p.waitFor();
+		}
+		String command = "./HelpFunction/gauss";
 		ProcessBuilder pb = new ProcessBuilder(command,
 				"./HelpFunction/input.txt", "./HelpFunction/output.txt");
+		System.out.println("Running GaussBin");
 		Process process = pb.start();
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(
 				process.getInputStream()));
 		String line = null;
 
-		while ((line = br.readLine()) != null)
+		while ((line = br.readLine()) != null){
 			sb.append(line + System.getProperty("line.separator"));
+		}
 
 		int errCode = process.waitFor();
 
-		if (errCode != 0)
+		if (errCode != 0){
 			System.out.println("Error from process " + errCode);
-
+		}
+		
+		System.out.println("GaussBin finished");
+		
 		return sb.toString();
 	}
 
@@ -255,12 +297,14 @@ public class Primes1 {
 			InterruptedException {
 
 		ArrayList<BigInteger> numbers = readFile("Data/input.txt");
+		long start = System.currentTimeMillis();
 		BigInteger N = numbers.get(6);
 		int diff = 10;
 		int l = (1 << 10) + diff;
+//		l=22;
 		List<BigInteger> primes = genPrimes(l - diff);
 		System.out.println("Primes generated");
-		int block = 10;
+		int block = 15;
 		int jump = 1;
 		LinkedList<BitSet> m = new LinkedList<BitSet>();
 		List<BigInteger> r2s = new LinkedList<BigInteger>();
@@ -275,8 +319,7 @@ public class Primes1 {
 		}
 		System.out.println("The number is " + N.toString());
 		testSolutions(m, rs, r2s, primes, N);
-		// }
-		// es.shutdown();
-
+		long end = System.currentTimeMillis();
+		System.out.println("It took " + (end-start) + " ms");
 	}
 }

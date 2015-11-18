@@ -1,5 +1,6 @@
 package project1;
 
+import java.math.BigInteger;
 import java.util.BitSet;
 
 public class BitSetTest {
@@ -15,6 +16,7 @@ public class BitSetTest {
 		System.out.println(bits2);
 		bits.xor(bits2);
 		System.out.println(bits);
+		System.out.println(new BigInteger("354864246643").multiply(new BigInteger("276678055057")).compareTo(new BigInteger("98183149570452781423651")));
 
 	}
 
