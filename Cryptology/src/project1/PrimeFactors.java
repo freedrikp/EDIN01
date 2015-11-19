@@ -62,7 +62,7 @@ public class PrimeFactors {
 		System.out.println("R:s generated");
 	}
 
-	public static BigInteger squareRoot(BigInteger x) {
+	private static BigInteger squareRoot(BigInteger x) {
 		BigInteger right = x, left = BigInteger.ZERO, mid;
 		while (right.subtract(left).compareTo(BigInteger.ONE) > 0) {
 			mid = (right.add(left)).shiftRight(1);
@@ -151,7 +151,7 @@ public class PrimeFactors {
 		}
 	}
 
-	public static void createInputFile(LinkedList<BitSet> list, int M, int N)
+	private static void createInputFile(LinkedList<BitSet> list, int M, int N)
 			throws IOException {
 		System.out.println("Generating input file...");
 		try {
@@ -174,7 +174,7 @@ public class PrimeFactors {
 		System.out.println("Input file generated");
 	}
 
-	public static ArrayList<BigInteger> readFile(String s) {
+	private static ArrayList<BigInteger> readFile(String s) {
 		ArrayList<BigInteger> data = new ArrayList<BigInteger>();
 
 		try {
@@ -192,7 +192,7 @@ public class PrimeFactors {
 		return data;
 	}
 
-	public static String findSolutions() throws IOException,
+	private static String findSolutions() throws IOException,
 			InterruptedException {
 		StringBuilder sb = new StringBuilder();
 		if (!new File("./HelpFunction/gauss").exists()) {
@@ -252,3 +252,4 @@ public class PrimeFactors {
 		System.out.println("It took " + (end-start) + " ms");
 	}
 }
+
