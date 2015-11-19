@@ -151,7 +151,7 @@ public class PrimeFactors {
 		}
 	}
 
-	private static void createInputFile(LinkedList<BitSet> list, int M, int N)
+	private static void createInputFile(List<BitSet> list, int M, int N)
 			throws IOException {
 		System.out.println("Generating input file...");
 		try {
@@ -227,13 +227,13 @@ public class PrimeFactors {
 	public static void main(String[] args){
 		ArrayList<BigInteger> numbers = readFile("Data/input.txt");
 		long start = System.currentTimeMillis();
-		BigInteger N = numbers.get(6);
+		BigInteger N = numbers.get(5);
 		int diff = 10;
 		int l = (1 << 10) + diff;
 		List<BigInteger> primes = genPrimes(l - diff);
 		System.out.println("Primes generated " + (System.currentTimeMillis()-start) + " ms");
 		int jump = 1;
-		LinkedList<BitSet> m = new LinkedList<BitSet>();
+		List<BitSet> m = new LinkedList<BitSet>();
 		List<BigInteger> r2s = new LinkedList<BigInteger>();
 		List<BigInteger> rs = new LinkedList<BigInteger>();
 		genRs(rs, r2s, l, N, primes, m, jump);
