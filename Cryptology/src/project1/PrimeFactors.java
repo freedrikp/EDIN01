@@ -38,7 +38,7 @@ public class PrimeFactors {
 
 	private static void genRs(List<BigInteger> rs, List<BigInteger> r2s,
 			int lValue, BigInteger nValue, List<BigInteger> primes,
-			List<BitSet> m, int block, int jump) {
+			List<BitSet> m, int jump) {
 		System.out.println("Generating Rs...");
 		int k = 1;
 		while (rs.size() < lValue) {
@@ -232,12 +232,11 @@ public class PrimeFactors {
 		int l = (1 << 10) + diff;
 		List<BigInteger> primes = genPrimes(l - diff);
 		System.out.println("Primes generated " + (System.currentTimeMillis()-start) + " ms");
-		int block = 15;
 		int jump = 1;
 		LinkedList<BitSet> m = new LinkedList<BitSet>();
 		List<BigInteger> r2s = new LinkedList<BigInteger>();
 		List<BigInteger> rs = new LinkedList<BigInteger>();
-		genRs(rs, r2s, l, N, primes, m, block, jump);
+		genRs(rs, r2s, l, N, primes, m, jump);
 		System.out.println("R:s generated " + (System.currentTimeMillis()-start) + " ms");
 		try {
 			createInputFile(m, m.size(), primes.size());
