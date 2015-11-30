@@ -16,11 +16,9 @@ public class PIN {
 		// byte toZero = (byte) (fsr[2] ^ 1 & fsr[1] ^ 1 & fsr[0] ^ 1 & fsr[3]);
 		// byte fromZero = (byte) (fsr[2] ^ 1 & fsr[1] ^ 1 & fsr[0] ^ 1 & fsr[3]
 		// ^ 1);
-		byte toZero = (byte) ((fsr[2] == 0 && fsr[1] == 0 && fsr[0] == 0 && fsr[3] == 1) ? 1
+		byte extraFeedback = (byte) ((fsr[2] == 0 && fsr[1] == 0 && fsr[0] == 0) ? 1
 				: 0);
-		byte fromZero = (byte) ((fsr[2] == 0 && fsr[1] == 0 && fsr[0] == 0 && fsr[3] == 0) ? 1
-				: 0);
-		byte in = (byte) ((fsr[3] + fsr[0] + toZero + fromZero) % 2);
+		byte in = (byte) ((fsr[3] + fsr[0] + extraFeedback) % 2);
 		out2 = fsr[3];
 		for (int i = fsr.length - 1; i > 0; i--) {
 			fsr[i] = fsr[i - 1];
