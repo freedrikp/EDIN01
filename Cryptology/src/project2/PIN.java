@@ -13,9 +13,6 @@ public class PIN {
 	private static byte out5;
 
 	private static void click2(byte[] fsr) {
-		// byte toZero = (byte) (fsr[2] ^ 1 & fsr[1] ^ 1 & fsr[0] ^ 1 & fsr[3]);
-		// byte fromZero = (byte) (fsr[2] ^ 1 & fsr[1] ^ 1 & fsr[0] ^ 1 & fsr[3]
-		// ^ 1);
 		byte extraFeedback = (byte) ((fsr[2] == 0 && fsr[1] == 0 && fsr[0] == 0) ? 1
 				: 0);
 		byte in = (byte) ((fsr[3] + fsr[0] + extraFeedback) % 2);
@@ -39,13 +36,6 @@ public class PIN {
 		fsr[0] = in;
 	}
 
-	private static void print(byte[] fsr) {
-		for (int i = fsr.length - 1; i >= 0; i--) {
-			System.out.print(fsr[i]);
-		}
-		System.out.println();
-	}
-
 	private static String toString(byte[] fsr) {
 		String s = "";
 		for (int i = fsr.length - 1; i >= 0; i--) {
@@ -59,57 +49,50 @@ public class PIN {
 		byte[] fsr5 = { 0, 0, 0, 0 };
 		out2 = 0;
 		out5 = 0;
-		// print(fsr);
+
 		HashSet<String> set = new HashSet<String>();
 		for (int i = 0; i < 625; i++) {
 			click5(fsr5);
-
 			String s = toString(fsr5);
 			if (set.contains(s)) {
-				System.out.println("Already visited: " + s);
+				System.out.println("Already visited in Z_2: " + s);
 			} else {
 				set.add(s);
 			}
 		}
-		System.out.println("Number of stated visited: " + set.size());
+		System.out.println("Number of stated visited in Z_2: " + set.size());
 
 		set = new HashSet<String>();
 		for (int i = 0; i < 16; i++) {
 			click2(fsr2);
-
 			String s = toString(fsr2);
 			if (set.contains(s)) {
-				System.out.println("Already visited: " + s);
+				System.out.println("Already visited in Z_5: " + s);
 			} else {
 				set.add(s);
 			}
 		}
-		System.out.println("Number of stated visited: " + set.size());
+		System.out.println("Number of stated visited in Z_5: " + set.size());
+		
 		try {
 			PrintWriter pw = new PrintWriter(new FileOutputStream("out.txt"));
 
 			for (int i = 0; i < 10003; i++) {
 				click2(fsr2);
 				click5(fsr5);
-				if (out2 == 1) {
-					pw.print(out5 + 5);
-				} else {
-					pw.print(out5);
-				}
-
+				pw.print(out2 * 5 + out5);
 			}
 			pw.flush();
 			pw.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		System.out.println(new File(".").getAbsolutePath());
-		Process p;
+
 		try {
-			ProcessBuilder pb = new ProcessBuilder("gcc", "-o", "verify" ,"Check_LE4.c");
-//			ProcessBuilder pb = new ProcessBuilder("ls");
+			ProcessBuilder pb = new ProcessBuilder("gcc", "-o", "verify",
+					"Check_LE4.c");
 			pb.inheritIO();
-			p = pb.start();
+			Process p = pb.start();
 			p.waitFor();
 
 			pb = new ProcessBuilder("./verify");
